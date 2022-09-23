@@ -10,11 +10,11 @@ const Login = () => {
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     const target = event.target as typeof event.target & {
-      username: { value: string };
+      email: { value: string };
       password: { value: string };
     };
     const data = {
-      username: target.username.value,
+      email: target.email.value,
       password: target.password.value,
     };
     const { token } = await login(data);
