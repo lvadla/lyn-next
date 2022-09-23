@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { useLogin } from "../hooks/useLogin";
+import { setJwtToken } from "../hooks/useJwtToken";
 
 const Login = () => {
   const router = useRouter();
@@ -17,8 +18,8 @@ const Login = () => {
       password: target.password.value,
     };
     const { token } = await login(data);
-    //FIXME: bad. localStorage is insecure. need to move this
-    localStorage.setItem("token", token);
+    //FIXME: better. sessionStorage is probably fleeting. testing needed
+    setJwtToken(token);
     router.push("/");
   };
 
