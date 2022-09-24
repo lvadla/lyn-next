@@ -1,12 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import {
-  Autocomplete,
-  AutocompleteProps,
+  TextInput,
   Button,
   Container,
   Group,
-  Loader,
   Paper,
   PasswordInput as MantinePasswordInput,
 } from "@mantine/core";
@@ -46,13 +44,19 @@ const Login = () => {
     <Container size={420} my={40}>
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <AutocompleteLoading {...form.getInputProps("email")} />
+          <TextInput
+            required
+            id="email"
+            label="Email"
+            placeholder="johnsmith@tibber.com"
+            {...form.getInputProps("email")}
+          />
           <MantinePasswordInput
-            label="Password"
-            required={true}
-            mt="md"
-            placeholder="Your password"
+            required
             id="password"
+            label="Password"
+            placeholder="Your password"
+            mt="md"
             {...form.getInputProps("password")}
           />
           <Group position="right">
@@ -67,42 +71,3 @@ const Login = () => {
 };
 
 export default Login;
-
-export function AutocompleteLoading(props: AutocompleteProps) {
-  const timeoutRef = useRef<number>(-1);
-  const [value, setValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<string[]>([]);
-
-  const handleChange = (val: string) => {
-    window.clearTimeout(timeoutRef.current);
-    setValue(val);
-    setData([]);
-
-    if (val.trim().length === 0 || val.includes("@")) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-      timeoutRef.current = window.setTimeout(() => {
-        setLoading(false);
-        setData(
-          ["tibber.com", "gmail.com", "outlook.com", "fastmail.com"].map(
-            (provider) => `${val}@${provider}`
-          )
-        );
-      }, 500);
-    }
-  };
-  return (
-    <Autocomplete
-      {...props}
-      required={true}
-      value={value}
-      onChange={handleChange}
-      rightSection={loading ? <Loader size={16} /> : null}
-      label="Email"
-      placeholder="Your email address"
-      data={data}
-    />
-  );
-}
