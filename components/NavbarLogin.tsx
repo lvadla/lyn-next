@@ -37,19 +37,29 @@ const useStyles = createStyles((theme, _params, getRef) => {
   };
 });
 
-function NavbarLogin() {
+interface NavbarLoginProps {
+  toggleNav: () => void;
+}
+
+function NavbarLogin({ toggleNav }: NavbarLoginProps) {
   const { classes } = useStyles();
   const authenticated = useReactiveVar(isAuthenticated);
 
   return (
     <Link href="/login" passHref>
       {authenticated ? (
-        <a className={classes.link} onClick={clearJwtToken}>
+        <a
+          className={classes.link}
+          onClick={() => {
+            clearJwtToken();
+            toggleNav();
+          }}
+        >
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
       ) : (
-        <a className={classes.link}>
+        <a className={classes.link} onClick={toggleNav}>
           <IconLogin className={classes.linkIcon} stroke={1.5} />
           <span>Login</span>
         </a>

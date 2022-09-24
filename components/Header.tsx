@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
 import {
   createStyles,
   Header as MantineHeader,
@@ -7,6 +5,7 @@ import {
   Button,
   Burger,
 } from "@mantine/core";
+import { NextLink } from "@mantine/next";
 import TibberLogo from "./TibberLogo";
 
 const useStyles = createStyles((theme) => ({
@@ -74,22 +73,20 @@ const useStyles = createStyles((theme) => ({
 
 interface HeaderProps {
   navOpened?: boolean;
-  toggleNav: () => void;
+  toggleNav?: () => void;
 }
 export const Header = ({ navOpened, toggleNav }: HeaderProps) => {
   const { classes } = useStyles();
-  const router = useRouter();
 
   return (
-    <MantineHeader height={60} px="md">
+    <MantineHeader height={60} px="lg">
       <Group position="apart" sx={{ height: "100%" }}>
         <TibberLogo />
         <Group>
           <Group className={classes.hiddenMobile}>
-            <Link href="/login" passHref>
-              <Button component="a">Log in</Button>
-            </Link>
-            <Button disabled>Sign up</Button>
+            <Button component={NextLink} href="/login">
+              Log in
+            </Button>
           </Group>
           <Burger opened={!!navOpened} onClick={toggleNav} />
         </Group>

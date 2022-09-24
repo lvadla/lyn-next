@@ -100,9 +100,10 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 interface NavbarColoredProps {
   opened: boolean;
+  toggleNav: () => void;
 }
 
-export const NavbarColored = ({ opened }: NavbarColoredProps) => {
+export const NavbarColored = ({ opened, toggleNav }: NavbarColoredProps) => {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Security");
 
@@ -139,7 +140,7 @@ export const NavbarColored = ({ opened }: NavbarColoredProps) => {
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <NavbarLogin />
+        <NavbarLogin toggleNav={toggleNav} />
       </Navbar.Section>
     </Navbar>
   );

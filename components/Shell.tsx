@@ -11,7 +11,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       padding="md"
       navbarOffsetBreakpoint="sm"
       fixed
-      navbar={<NavbarColored opened={opened} />}
+      navbar={
+        <NavbarColored opened={opened} toggleNav={() => setOpened((o) => !o)} />
+      }
       header={
         <Header navOpened={opened} toggleNav={() => setOpened((o) => !o)} />
       }
