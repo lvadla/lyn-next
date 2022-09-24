@@ -1,10 +1,11 @@
+import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import useGetTemperatureData from "../hooks/useGetTemperatureData";
 
-export default function Home() {
-  const { data } = useGetTemperatureData();
+const Home: NextPage = () => {
+  //   const { data } = useGetTemperatureData();
   return (
     <div className={styles.container}>
       <Head>
@@ -20,7 +21,7 @@ export default function Home() {
 
         <p className={styles.description}>
           Get started by editing{" "}
-          <code className={styles.code}>pages/index.js</code>
+          <code className={styles.code}>pages/index.tsx</code>
         </p>
 
         <div className={styles.grid}>
@@ -44,7 +45,7 @@ export default function Home() {
 
           <div className={styles.card}>
             <h2>Weather</h2>
-            <p>{JSON.stringify(data)} </p>
+            {/* <p>{JSON.stringify(data)}</p> */}
           </div>
         </div>
       </main>
@@ -59,4 +60,6 @@ export default function Home() {
       </footer>
     </div>
   );
-}
+};
+
+export default Home;
