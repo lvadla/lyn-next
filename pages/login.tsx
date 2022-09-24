@@ -7,10 +7,13 @@ import {
   Group,
   Paper,
   PasswordInput as MantinePasswordInput,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useLogin } from "../hooks/useLogin";
 import { setJwtToken } from "../hooks/useJwtToken";
+import { IconUser } from "@tabler/icons";
+import { useTimeout } from "@mantine/hooks";
 
 const initialFormValues = {
   email: "",
@@ -20,6 +23,9 @@ const initialFormValues = {
 const Login = () => {
   const router = useRouter();
   const login = useLogin();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { start: startLoaderDelay } = useTimeout(() => setLoading(false), 1000);
 
   const form = useForm({
     initialValues: initialFormValues,
@@ -30,12 +36,19 @@ const Login = () => {
   });
 
   const handleSubmit = async (values: typeof initialFormValues) => {
+    setLoading(true);
     const data = {
       email: values.email,
       password: values.password,
     };
-    const { token } = await login(data);
-    //FIXME: better. sessionStorage is probably fleeting. testing needed
+    const response = await login(data);
+    if (!response.ok) {
+      const error = await response.json();
+      startLoaderDelay();
+      setError(error.message);
+      return;
+    }
+    const { token } = await response.json();
     setJwtToken(token);
     router.push("/");
   };
@@ -59,8 +72,18 @@ const Login = () => {
             mt="md"
             {...form.getInputProps("password")}
           />
+          {error ? (
+            <Text mt="xs" color="red">
+              {error}
+            </Text>
+          ) : null}
           <Group position="right">
-            <Button mt="xl" type="submit">
+            <Button
+              loading={loading}
+              leftIcon={<IconUser size={14} />}
+              mt="xl"
+              type="submit"
+            >
               Sign in
             </Button>
           </Group>

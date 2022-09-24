@@ -3,12 +3,8 @@ interface LoginRequest {
   password: string;
 }
 
-interface LoginResponse {
-  token: string;
-}
-
 export const useLogin = () => {
-  const login = async (request: LoginRequest): Promise<LoginResponse> => {
+  const login = async (request: LoginRequest): Promise<Response> => {
     const result = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/login.credentials`,
       {
@@ -19,7 +15,7 @@ export const useLogin = () => {
         method: "POST",
       }
     );
-    return await result.json();
+    return result;
   };
   return login;
 };
