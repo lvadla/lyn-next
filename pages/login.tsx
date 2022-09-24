@@ -1,5 +1,13 @@
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/router";
-import React from "react";
+import {
+  Autocomplete,
+  Button,
+  Container,
+  Loader,
+  Paper,
+  PasswordInput as MantinePasswordInput,
+} from "@mantine/core";
 import { useLogin } from "../hooks/useLogin";
 import { setJwtToken } from "../hooks/useJwtToken";
 
@@ -24,14 +32,62 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="email">Email</label>
-      <input type="email" name="email" id="email" required />
-      <label htmlFor="password">Password</label>
-      <input type="password" name="password" id="password" required />
-      <button type="submit">Submit</button>
-    </form>
+    <Container size={420} my={40}>
+      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <form onSubmit={handleSubmit}>
+          <AutocompleteLoading />
+          <MantinePasswordInput
+            label="Password"
+            required={true}
+            mt="md"
+            placeholder="Your password"
+            id="password"
+          />
+          <Button fullWidth mt="xl" type="submit">
+            Sign in
+          </Button>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 
 export default Login;
+
+export function AutocompleteLoading() {
+  const timeoutRef = useRef<number>(-1);
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<string[]>([]);
+
+  const handleChange = (val: string) => {
+    window.clearTimeout(timeoutRef.current);
+    setValue(val);
+    setData([]);
+
+    if (val.trim().length === 0 || val.includes("@")) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+      timeoutRef.current = window.setTimeout(() => {
+        setLoading(false);
+        setData(
+          ["tibber.com", "gmail.com", "outlook.com", "fastmail.com"].map(
+            (provider) => `${val}@${provider}`
+          )
+        );
+      }, 500);
+    }
+  };
+  return (
+    <Autocomplete
+      required={true}
+      value={value}
+      data={data}
+      onChange={handleChange}
+      rightSection={loading ? <Loader size={16} /> : null}
+      label="Email"
+      placeholder="Your email address"
+    />
+  );
+}
