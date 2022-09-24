@@ -2,12 +2,12 @@ import { createStyles, Title, Text, Button, Container } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
-    paddingTop: 80,
-    paddingBottom: 100,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: 80,
 
     "@media (max-width: 755px)": {
-      paddingTop: 60,
-      paddingBottom: 80,
+      paddingTop: theme.spacing.lg,
+      paddingBottom: 60,
     },
   },
 
@@ -39,32 +39,6 @@ const useStyles = createStyles((theme) => ({
       fontSize: theme.fontSizes.md,
     },
   },
-
-  controls: {
-    marginBottom: theme.spacing.xl,
-    display: "flex",
-    justifyContent: "center",
-
-    "@media (max-width: 520px)": {
-      flexDirection: "column",
-    },
-  },
-
-  control: {
-    "&:not(:first-of-type)": {
-      marginLeft: theme.spacing.md,
-    },
-
-    "@media (max-width: 520px)": {
-      height: 42,
-      fontSize: theme.fontSizes.md,
-
-      "&:not(:first-of-type)": {
-        marginTop: theme.spacing.md,
-        marginLeft: 0,
-      },
-    },
-  },
 }));
 
 function HeroText() {
@@ -72,15 +46,6 @@ function HeroText() {
 
   return (
     <Container className={classes.wrapper} size={1400}>
-      <div className={classes.controls}>
-        <Button className={classes.control} size="lg">
-          Show me a trick
-        </Button>
-        <Button className={classes.control} variant="default" size="lg">
-          Reset
-        </Button>
-      </div>
-
       <Container p={0} size={600}>
         <Title className={classes.title}>
           Infrastructure{" "}
