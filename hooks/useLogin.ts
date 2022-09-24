@@ -1,3 +1,5 @@
+import isAuthenticated from "../constants/isAuthenticated";
+
 interface LoginRequest {
   email: string;
   password: string;
@@ -19,6 +21,7 @@ export const useLogin = () => {
         method: "POST",
       }
     );
+    if (result.ok) isAuthenticated(true);
     return await result.json();
   };
   return login;

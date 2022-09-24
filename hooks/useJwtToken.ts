@@ -1,7 +1,15 @@
+import isAuthenticated from "../constants/isAuthenticated";
+
 export function getJwtToken() {
-  return sessionStorage.getItem("jwt");
+  const token = sessionStorage.getItem("jwt");
+  isAuthenticated(token ? true : false);
+  return token;
 }
 
 export function setJwtToken(token: string) {
   sessionStorage.setItem("jwt", token);
+}
+
+export function clearJwtToken() {
+  sessionStorage.removeItem("jwt");
 }
