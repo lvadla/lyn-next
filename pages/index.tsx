@@ -5,12 +5,10 @@ import styles from "../styles/Home.module.css";
 import useGetTemperatureData from "../hooks/useGetTemperatureData";
 
 const Home: NextPage = () => {
-  const { data } = useGetTemperatureData();
+  // const { data } = useGetTemperatureData();
   return (
     <>
-      <main className={styles.main}>
-        <p>{JSON.stringify(data)}</p>
-      </main>
+      {/* <p>{JSON.stringify(data)}</p> */}
 
       <footer className={styles.footer}>
         <a href="https://vercel.com" target="_blank" rel="noopener noreferrer">

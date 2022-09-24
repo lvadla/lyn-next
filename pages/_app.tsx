@@ -4,6 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import { ApolloProvider } from "@apollo/client";
 import client from "../apollo-client";
 import Shell from "../components/Shell";
+import AuthGuard from "../components/AuthGuard";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -26,11 +27,13 @@ export default function App(props: AppProps) {
           colorScheme: "light",
         }}
       >
-        <ApolloProvider client={client}>
-          <Shell>
-            <Component {...pageProps} />
-          </Shell>
-        </ApolloProvider>
+        <AuthGuard excludedRoutes={["/login"]}>
+          <ApolloProvider client={client}>
+            <Shell>
+              <Component {...pageProps} />
+            </Shell>
+          </ApolloProvider>
+        </AuthGuard>
       </MantineProvider>
     </>
   );
