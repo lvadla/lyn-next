@@ -18,6 +18,13 @@ const Home: NextPage = () => {
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
+        <a
+          href="https://lancevadla.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Built by Lance
+        </a>
       </footer>
     </>
   );
