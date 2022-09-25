@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Bar } from "@visx/shape";
 import { Group } from "@visx/group";
 import { LinearGradient } from "@visx/gradient";
@@ -6,13 +6,14 @@ import { scaleBand, scaleLinear } from "@visx/scale";
 import { ParentSize } from "@visx/responsive";
 import {
   AspectRatio,
+  Box,
   Button,
   createStyles,
   Skeleton,
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { useState } from "react";
+import { useTimeout } from "@mantine/hooks";
 import useGetTemperatureData from "../hooks/useGetTemperatureData";
 
 const useStyles = createStyles((theme) => ({
@@ -46,6 +47,9 @@ const useStyles = createStyles((theme) => ({
 function WeatherGraph() {
   const { classes } = useStyles();
   const [loading, setLoading] = useState(true);
+  const { start: startLoaderDelay } = useTimeout(() => setLoading(false), 1000);
+
+  useEffect(() => startLoaderDelay(), [startLoaderDelay]);
 
   return (
     <>
@@ -75,8 +79,6 @@ function WeatherGraph() {
 
 export default WeatherGraph;
 
-const verticalMargin = 80;
-
 interface Weather {
   minTemperature: number;
   maxTemperature: number;
@@ -103,6 +105,7 @@ function Graph({ width, height, events = false }: BarsProps) {
   const weather = data.me.home.weather as Weather;
 
   // bounds
+  const verticalMargin = height / 3;
   const xMax = width;
   const yMax = height - verticalMargin;
 
@@ -130,17 +133,33 @@ function Graph({ width, height, events = false }: BarsProps) {
 
   return (
     <>
-      <Text>
-        {(
-          weather.entries
-            .map((d) => d.temperature)
-            .reduce((a: number, b: number) => a + b) / weather.entries.length
-        ).toFixed(1)}
-      </Text>
+      <Box
+        sx={(theme) => ({
+          color: theme.colors.gray[2],
+          position: "absolute",
+          marginLeft: "auto",
+          marginRight: "auto",
+          left: 0,
+          right: 0,
+          textAlign: "center",
+        })}
+      >
+        <Text size="xs" mt="xs">
+          Average Temperature
+        </Text>
+        <Text size="xl" weight="bold">
+          {(
+            weather.entries
+              .map((d) => d.temperature)
+              .reduce((a: number, b: number) => a + b) / weather.entries.length
+          ).toFixed(1)}
+          &#176;
+        </Text>
+      </Box>
       <svg width={width} height={height}>
         <LinearGradient from="#000022" to="#000022" id="dark-blue" />
-        <rect width={width} height={height} fill="url(#dark-blue)" rx={14} />
-        <Group top={verticalMargin / 2}>
+        <rect width={width} height={height} fill="url(#dark-blue)" />
+        <Group top={verticalMargin * 0.8}>
           {weather.entries.map((d: Entry) => {
             const time = getTime(d);
             const barWidth = xScale.bandwidth();
@@ -154,6 +173,7 @@ function Graph({ width, height, events = false }: BarsProps) {
                 y={barY}
                 width={barWidth}
                 height={barHeight}
+                rx={3}
                 textDecoration={JSON.stringify(d)}
                 fill={theme.colors.gray[2]}
               />
