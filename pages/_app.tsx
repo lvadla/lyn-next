@@ -5,6 +5,7 @@ import { ApolloProvider } from "@apollo/client";
 import client from "../apollo-client";
 import Shell from "../components/Shell";
 import AuthGuard from "../components/AuthGuard";
+import { CustomFonts } from "../Typography/CustomFonts";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -24,9 +25,11 @@ export default function App(props: AppProps) {
         withGlobalStyles
         withNormalizeCSS
         theme={{
+          fontFamily: "Avenir, sans-serif",
           colorScheme: "light",
         }}
       >
+        <CustomFonts />
         <AuthGuard excludedRoutes={["/login"]}>
           <ApolloProvider client={client}>
             <Shell>

@@ -47,7 +47,7 @@ function HeroText() {
   return (
     <Container className={classes.wrapper} size={1400}>
       <Container p={0} size={600}>
-        <Title className={classes.title}>
+        <Title className={classes.title} sx={{ fontFamily: "Silka" }}>
           Infrastructure{" "}
           <Text component="span" className={classes.highlight} inherit>
             supply chain

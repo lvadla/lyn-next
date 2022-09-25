@@ -26,6 +26,7 @@ const useStyles = createStyles((theme) => ({
   },
 
   title: {
+    fontFamily: "Silka",
     display: "block",
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.xs / 2,
