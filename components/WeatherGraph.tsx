@@ -9,6 +9,7 @@ import {
   Button,
   createStyles,
   Skeleton,
+  Text,
   useMantineTheme,
 } from "@mantine/core";
 import { useState } from "react";
@@ -49,13 +50,11 @@ function WeatherGraph() {
   return (
     <>
       <AspectRatio ratio={21 / 9} mx="auto" sx={{ maxWidth: "960px" }}>
-        {loading ? (
-          <Skeleton radius="lg" />
-        ) : (
+        <Skeleton radius="lg" visible={loading}>
           <ParentSize>
             {({ width, height }) => <Graph width={width} height={height} />}
           </ParentSize>
-        )}
+        </Skeleton>
       </AspectRatio>
 
       <div className={classes.controls}>
@@ -81,15 +80,17 @@ const verticalMargin = 80;
 interface Weather {
   minTemperature: number;
   maxTemperature: number;
-  entries: {
-    time: string;
-    temperature: number;
-    type: string;
-  };
+  entries: Entry[];
 }
 
-const getTime = (d: Weather["entries"]) => new Date(d.time).getHours();
-const getTemperature = (d: Weather["entries"]) => Number(d.temperature) * 100;
+interface Entry {
+  time: string;
+  temperature: number;
+  type: string;
+}
+
+const getTime = (d: Entry) => new Date(d.time).getHours();
+const getTemperature = (d: Entry) => Number(d.temperature) * 100;
 
 type BarsProps = {
   width: number;
@@ -98,22 +99,16 @@ type BarsProps = {
 };
 
 function Graph({ width, height, events = false }: BarsProps) {
-  const {
-    data: {
-      me: {
-        home: { weather },
-      },
-    },
-  } = useGetTemperatureData();
+  const { data } = useGetTemperatureData();
+  const weather = data.me.home.weather as Weather;
 
   // bounds
   const xMax = width;
   const yMax = height - verticalMargin;
 
-  // scales, memoize for performance
   const xScale = useMemo(
     () =>
-      scaleBand<string>({
+      scaleBand<number>({
         range: [0, xMax],
         round: true,
         domain: weather.entries.map(getTime),
@@ -134,33 +129,38 @@ function Graph({ width, height, events = false }: BarsProps) {
   const theme = useMantineTheme();
 
   return (
-    <svg width={width} height={height}>
-      <LinearGradient from="#000022" to="#000022" id="dark-blue" />
-      <rect width={width} height={height} fill="url(#dark-blue)" rx={14} />
-      <Group top={verticalMargin / 2}>
-        {weather.entries.map((d: Weather["entries"]) => {
-          const time = getTime(d);
-          const barWidth = xScale.bandwidth();
-          const barHeight = yMax - (yScale(getTemperature(d)) ?? 0);
-          const barX = xScale(time.toString());
-          const barY = yMax - barHeight;
-          return (
-            <Bar
-              key={`bar-${time}`}
-              x={barX}
-              y={barY}
-              width={barWidth}
-              height={barHeight}
-              textDecoration={JSON.stringify(d)}
-              fill={theme.colors.gray[2]}
-              onClick={() => {
-                if (events)
-                  alert(`clicked: ${JSON.stringify(Object.values(d))}`);
-              }}
-            />
-          );
-        })}
-      </Group>
-    </svg>
+    <>
+      <Text>
+        {(
+          weather.entries
+            .map((d) => d.temperature)
+            .reduce((a: number, b: number) => a + b) / weather.entries.length
+        ).toFixed(1)}
+      </Text>
+      <svg width={width} height={height}>
+        <LinearGradient from="#000022" to="#000022" id="dark-blue" />
+        <rect width={width} height={height} fill="url(#dark-blue)" rx={14} />
+        <Group top={verticalMargin / 2}>
+          {weather.entries.map((d: Entry) => {
+            const time = getTime(d);
+            const barWidth = xScale.bandwidth();
+            const barHeight = yMax - (yScale(getTemperature(d)) ?? 0);
+            const barX = xScale(time);
+            const barY = yMax - barHeight;
+            return (
+              <Bar
+                key={`bar-${time}`}
+                x={barX}
+                y={barY}
+                width={barWidth}
+                height={barHeight}
+                textDecoration={JSON.stringify(d)}
+                fill={theme.colors.gray[2]}
+              />
+            );
+          })}
+        </Group>
+      </svg>
+    </>
   );
 }
