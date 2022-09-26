@@ -19,7 +19,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       }
       styles={(theme) => ({
         main: {
-          backgroundColor: theme.colors.gray[1],
+          backgroundColor:
+            theme.colorScheme === "dark"
+              ? theme.colors.dark[7]
+              : theme.colors.gray[1],
         },
       })}
     >

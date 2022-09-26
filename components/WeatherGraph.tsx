@@ -12,7 +12,9 @@ import {
   Skeleton,
   Text,
   useMantineTheme,
+  useMantineColorScheme,
 } from "@mantine/core";
+import { IconSquareX, IconWand } from "@tabler/icons";
 import useGetTemperatureData from "../hooks/useGetTemperatureData";
 
 const useStyles = createStyles((theme) => ({
@@ -45,6 +47,7 @@ const useStyles = createStyles((theme) => ({
 
 function WeatherGraph() {
   const { classes } = useStyles();
+  const { toggleColorScheme } = useMantineColorScheme();
   const { loading, error, data } = useGetTemperatureData();
   return (
     <>
@@ -64,12 +67,19 @@ function WeatherGraph() {
 
       <div className={classes.controls}>
         <Button
+          leftIcon={<IconWand />}
           className={classes.control}
           size="lg"
+          onClick={() => toggleColorScheme()}
         >
           <Text transform="uppercase">Show me a trick</Text>
         </Button>
-        <Button className={classes.control} variant="default" size="lg">
+        <Button
+          leftIcon={<IconSquareX />}
+          className={classes.control}
+          variant="outline"
+          size="lg"
+        >
           <Text transform="uppercase">Reset</Text>
         </Button>
       </div>
