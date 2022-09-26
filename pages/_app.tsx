@@ -9,10 +9,11 @@ import {
   ColorSchemeProvider,
 } from "@mantine/core";
 import { ApolloProvider } from "@apollo/client";
+
 import client from "../apollo-client";
 import Shell from "../components/Shell";
 import AuthGuard from "../components/AuthGuard";
-import { CustomFonts } from "../Typography/CustomFonts";
+import { CustomFonts } from "../typography/CustomFonts";
 
 export default function App(props: AppProps & { colorScheme: ColorScheme }) {
   const { Component, pageProps } = props;
