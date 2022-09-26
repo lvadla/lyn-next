@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { Bar } from "@visx/shape";
 import { Group } from "@visx/group";
 import { LinearGradient } from "@visx/gradient";
@@ -13,7 +13,6 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { useTimeout } from "@mantine/hooks";
 import useGetTemperatureData from "../hooks/useGetTemperatureData";
 
 const useStyles = createStyles((theme) => ({
@@ -46,31 +45,32 @@ const useStyles = createStyles((theme) => ({
 
 function WeatherGraph() {
   const { classes } = useStyles();
-  const [loading, setLoading] = useState(true);
-  const { start: startLoaderDelay } = useTimeout(() => setLoading(false), 1000);
-
-  useEffect(() => startLoaderDelay(), [startLoaderDelay]);
-
+  const { loading, error, data } = useGetTemperatureData();
   return (
     <>
       <AspectRatio ratio={21 / 9} mx="auto" sx={{ maxWidth: "960px" }}>
-        <Skeleton radius="lg" visible={loading}>
+        {error ? (
+          <div>{error.message}</div>
+        ) : loading ? (
+          <Skeleton radius="lg"></Skeleton>
+        ) : (
           <ParentSize>
-            {({ width, height }) => <Graph width={width} height={height} />}
+            {({ width, height }) => (
+              <Graph data={data} width={width} height={height} />
+            )}
           </ParentSize>
-        </Skeleton>
+        )}
       </AspectRatio>
 
       <div className={classes.controls}>
         <Button
           className={classes.control}
           size="lg"
-          onClick={() => setLoading((v) => !v)}
         >
-          Show me a trick
+          <Text transform="uppercase">Show me a trick</Text>
         </Button>
         <Button className={classes.control} variant="default" size="lg">
-          Reset
+          <Text transform="uppercase">Reset</Text>
         </Button>
       </div>
     </>
@@ -79,10 +79,16 @@ function WeatherGraph() {
 
 export default WeatherGraph;
 
-interface Weather {
-  minTemperature: number;
-  maxTemperature: number;
-  entries: Entry[];
+interface Data {
+  me: {
+    home: {
+      weather: {
+        minTemperature: number;
+        maxTemperature: number;
+        entries: Entry[];
+      };
+    };
+  };
 }
 
 interface Entry {
@@ -95,15 +101,13 @@ const getTime = (d: Entry) => new Date(d.time).getHours();
 const getTemperature = (d: Entry) => Number(d.temperature) * 100;
 
 type BarsProps = {
+  data: Data;
   width: number;
   height: number;
   events?: boolean;
 };
 
-function Graph({ width, height, events = false }: BarsProps) {
-  const { data } = useGetTemperatureData();
-  const weather = data.me.home.weather as Weather;
-
+function Graph({ data, width, height, events = false }: BarsProps) {
   // bounds
   const verticalMargin = height / 3;
   const xMax = width;
@@ -114,19 +118,22 @@ function Graph({ width, height, events = false }: BarsProps) {
       scaleBand<number>({
         range: [0, xMax],
         round: true,
-        domain: weather.entries.map(getTime),
+        domain: data.me.home.weather.entries.map(getTime),
         padding: 0.4,
       }),
-    [weather.entries, xMax]
+    [data.me.home.weather.entries, xMax]
   );
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
         range: [yMax, 0],
         round: true,
-        domain: [0, Math.max(...weather.entries.map(getTemperature))],
+        domain: [
+          0,
+          Math.max(...data.me.home.weather.entries.map(getTemperature)),
+        ],
       }),
-    [weather.entries, yMax]
+    [data.me.home.weather.entries, yMax]
   );
 
   const theme = useMantineTheme();
@@ -141,6 +148,7 @@ function Graph({ width, height, events = false }: BarsProps) {
           marginRight: "auto",
           left: 0,
           right: 0,
+          top: 0,
           textAlign: "center",
         })}
       >
@@ -149,18 +157,19 @@ function Graph({ width, height, events = false }: BarsProps) {
         </Text>
         <Text size="xl" weight="bold">
           {(
-            weather.entries
+            data.me.home.weather.entries
               .map((d) => d.temperature)
-              .reduce((a: number, b: number) => a + b) / weather.entries.length
+              .reduce((a: number, b: number) => a + b) /
+            data.me.home.weather.entries.length
           ).toFixed(1)}
           &#176;
         </Text>
       </Box>
       <svg width={width} height={height}>
         <LinearGradient from="#000022" to="#000022" id="dark-blue" />
-        <rect width={width} height={height} fill="url(#dark-blue)" />
+        <rect width={width} height={height} fill="url(#dark-blue)" rx={12} />
         <Group top={verticalMargin * 0.8}>
-          {weather.entries.map((d: Entry) => {
+          {data.me.home.weather.entries.map((d: Entry) => {
             const time = getTime(d);
             const barWidth = xScale.bandwidth();
             const barHeight = yMax - (yScale(getTemperature(d)) ?? 0);
